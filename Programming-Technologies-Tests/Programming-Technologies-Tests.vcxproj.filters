@@ -20,8 +20,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Users\Egor\source\repos\Programming-Technologies-1-4\Programming-Technologies\PT-1-4.h">
-      <Filter>Файлы ресурсов</Filter>
+    <ClInclude Include="PT-1-4.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="PT-2-4.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

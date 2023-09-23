@@ -4,26 +4,22 @@
 #include <string>
 #include <vector>
 
-#include "../../../Users/Egor/source/repos/Programming-Technologies-1-4/Programming-Technologies/PT-1-4.h"
+#include "Utils.h"
+
+#include "PT-1-4.h"
+#include "PT-2-4.h"
 
 using namespace std;
 
 const std::string TESTS_1_4_INPUT = "../tests_1_4_input.txt";
-const std::string TESTS_1_4_OUTPUT = "tests_1_4_output.txt";
+const std::string TESTS_2_4_INPUT = "../tests_2_4_input.txt";
 
 const std::string TEST_FLAG = "-TEST";
 const std::string CORRECT_FLAG = "-CORRECT";
 
-void print_vector(vector<int> vect)
-{
-	for (size_t i = 0; i < vect.size(); i++)
-	{
-		cout << vect[i] << " ";
-	}
-	cout << "\n";
-}
 
-#define TEST_1_4
+
+
 
 void tests_1_4()
 {
@@ -31,7 +27,7 @@ void tests_1_4()
 
 	if (!inputFile.is_open())
 	{
-		cout << "ERROR:  Cannot open file: " << TESTS_1_4_INPUT << "\n";
+		print_cannot_open_file(TESTS_1_4_INPUT);
 		return;
 	}
 
@@ -40,7 +36,6 @@ void tests_1_4()
 	bool isCorrectLine = false;
 
 	string line;
-	bool isSizeGot = false;
 
 	int currentSize;
 	vector<int> currentVector;
@@ -61,7 +56,6 @@ void tests_1_4()
 		{
 			istringstream iss( line );
 
-
 			if (!isCorrectLine)
 			{
 				currentVector.clear();
@@ -72,15 +66,13 @@ void tests_1_4()
 					currentVector.push_back(number);
 				}
 
-				cout << "------------------------------------------\n";
-				cout << "Processing TEST: " << (testsMade) << "\n";
-
-				cout << "\n>> Input: \n";
+				print_processing_test(testsMade);
+				print_input();
 				print_vector(currentVector);
 
-				currentVector = swap_to_closet_max(currentVector);
+				currentVector = TASK_1_4::swap_to_closet_max(currentVector);
 
-				cout << "\n>> Output: \n";
+				print_output();
 				print_vector(currentVector);
 			}
 			else
@@ -92,41 +84,133 @@ void tests_1_4()
 					correctVector.push_back(number);
 				}
 
-				cout << "\n>> Expected output: \n";
-				print_vector(currentVector);
+				print_expected_output();
+				print_vector(correctVector);
 
 				if (currentVector == correctVector)
 				{
-					cout << "\nTEST PASSED\n";
+					print_test_passed();
 					++testsPassed;
 				}
 				else
 				{
-					cout << "\nTEST FAILED\n";
+					print_test_failed();
 				}
-
-				cout << "------------------------------------------\n";
 			}
 
 		}
 		
 	}
-
-	cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
-	cout << "Tests made: " << testsMade << "\n";
-	cout << "Tests passed: " << testsPassed << "\n";
-	cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
+	print_tests_result(testsMade, testsPassed);
 	inputFile.close();
 }
 
+void tests_2_4()
+{
+	ifstream inputFile(TESTS_2_4_INPUT);
+
+	if (!inputFile.is_open())
+	{
+		print_cannot_open_file(TESTS_2_4_INPUT);
+		return;
+	}
+
+	int testsMade = 0;
+	int testsPassed = 0;
+	bool isCorrectLine = false;
+
+	string line;
+
+	int currentSize;
+	vector<vector<int>> currentMatrix;
+	vector<vector<int>> correctMatrix;
+
+	while (getline(inputFile, line))
+	{
+		if (line == TEST_FLAG)
+		{
+			++testsMade;
+			isCorrectLine = false;
+			currentMatrix.clear();
+		}
+		else if (line == CORRECT_FLAG)
+		{
+			isCorrectLine = true;
+			correctMatrix.clear();
+		}
+		else
+		{
+			vector<int> lineVector;
+			lineVector.clear();
+
+			istringstream iss(line);
+
+			int number;
+			while (iss >> number)
+			{
+				lineVector.push_back(number);
+			}
+
+
+			if (!isCorrectLine)
+			{
+				currentMatrix.push_back(lineVector);
+
+				if (currentMatrix.size() == lineVector.size())
+				{
+					print_processing_test(testsMade);
+					print_input();
+					print_vector(currentMatrix);
+
+					auto csMatrix = TASK_2_4::pack_to_CSMatrix_with_shift(currentMatrix);
+
+					print_output();
+					csMatrix->print();
+
+					currentMatrix = csMatrix->to_vector();
+					delete csMatrix;
+				}
+			}
+			else
+			{
+				correctMatrix.push_back(lineVector);
+
+				if (correctMatrix.size() == 3)
+				{
+					print_expected_output();
+					print_vector(correctMatrix);
+
+					if (currentMatrix == correctMatrix)
+					{
+						print_test_passed();
+						++testsPassed;
+					}
+					else
+					{
+						print_test_failed();
+					}
+				}
+			}
+		}
+	}
+	print_tests_result(testsMade, testsPassed);
+	inputFile.close();
+}
+
+//#define TEST_1_4
+#define TEST_2_4
 
 int main()
 {
-    cout << ">>>>>> TEST STAND BY AP1KKK <<<<<<\n";
+	print_owner();
 
 #ifdef TEST_1_4
 	tests_1_4();
 #endif // TEST_1_4
 
+#ifdef TEST_2_4
+	tests_2_4();
+#endif // TEST_2_4
 
+	print_owner();
 }

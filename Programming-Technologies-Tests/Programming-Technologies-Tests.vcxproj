@@ -130,7 +130,9 @@
     <ClCompile Include="Programming-Technologies-Tests.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Users\Egor\source\repos\Programming-Technologies-1-4\Programming-Technologies\PT-1-4.h" />
+    <ClInclude Include="PT-1-4.h" />
+    <ClInclude Include="PT-2-4.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
