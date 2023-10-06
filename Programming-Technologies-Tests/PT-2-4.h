@@ -73,6 +73,7 @@ namespace TASK_2_4
             
             _tail = _tail->prev;
             delete deletedNode;
+            _tail->next = nullptr;
 
             --_size;
 
@@ -139,25 +140,43 @@ namespace TASK_2_4
 
             for (size_t i = 0; i < N; i++)
             {
-                values[i] = new int[M];
+                values[i] = new int[M] {0};
             }
         }
         ~Matrix()
         {
 
         }
+
+        void print()
+        {
+            string out = "";
+            for (size_t i = 0; i < N; i++)
+            {
+                for (size_t j = 0; j < M; j++)
+                {
+                    out += to_string(values[i][j]) + " ";
+                }
+                out += "\n";
+            }
+            out += "\n";
+            cout << out;
+        }
     };
 
     struct CSMatrix
     {
         int N = 0;
+        int Elements = 0;
         List A;
         List LJ;
         List LI;
 
+        CSMatrix(int matrixSize) : N(matrixSize) { }
+
         CSMatrix* update()
         { 
-            N = A.size(); 
+            Elements = A.size();
             return this;
         }
 
@@ -270,6 +289,7 @@ namespace TASK_2_4
     vector<vector<int>>& matrix_to_vector(Matrix* matrix)
     {
         static vector<vector<int>> outputVector;
+        outputVector.clear();
 
         for (size_t i = 0; i < matrix->N; i++)
         {
@@ -277,15 +297,15 @@ namespace TASK_2_4
             outputVector.push_back(lineVector);
             for (size_t j = 0; j < matrix->M; j++)
             {
-                outputVector[i][j] = matrix->values[i][j];
+                outputVector[i].push_back(matrix->values[i][j]);
             }
         }
         return outputVector;
-    }
+    }  
 
     CSMatrix* pack_to_CSMatrix_with_shift(Matrix* inputMatrix)
     {
-        CSMatrix* matrix = new CSMatrix;
+        CSMatrix* matrix = new CSMatrix(inputMatrix->N);
 
         int n = inputMatrix->N;
         int m = inputMatrix->M;
@@ -342,5 +362,116 @@ namespace TASK_2_4
     CSMatrix* pack_to_CSMatrix_with_shift(vector<vector<int>>& vectors)
     {
         return pack_to_CSMatrix_with_shift(vectors_to_matrix(vectors));
+    }
+
+    CSMatrix* pack_to_CSMatrix(Matrix* inputMatrix)
+    {
+        CSMatrix* matrix = new CSMatrix(inputMatrix->N);
+
+        int n = inputMatrix->N;
+        int m = inputMatrix->M;
+
+        List& A = matrix->A;
+        List& LI = matrix->LI;
+        List& LJ = matrix->LJ;
+
+        for (size_t i = 0; i < n; i++)
+        {
+            for (size_t j = 0; j < m; j++)
+            {
+                int element = inputMatrix->values[i][j];
+                if (element == 0)
+                {
+                    continue;
+                }
+                A.push_back(element);
+                LI.push_back(i + 1);
+                LJ.push_back(j + 1);
+            }
+        }
+        return matrix->update();
+    }
+
+    CSMatrix* shift_CSMatrix(CSMatrix* csMatrix)
+    {
+        List& A = csMatrix->A;
+        List& LI = csMatrix->LI;
+        List& LJ = csMatrix->LJ;
+
+        auto size = csMatrix->N;
+        auto elementsAmount = csMatrix->Elements;
+        auto currentElementA = A.get_head();
+        auto currentElementLI = LI.get_head();
+        auto currentElementLJ = LJ.get_head();
+
+        bool isLastNotNull = false;
+        
+        for (size_t i = 0; i < elementsAmount; i++)
+        {
+            int iIndex = currentElementLI->value;
+            int jIndex = currentElementLJ->value;
+
+            ++jIndex;
+            if (jIndex > size)
+            {
+                jIndex = 1;
+                if (iIndex == size)
+                {
+                    iIndex = 1;
+                    isLastNotNull = true;
+                }
+                else
+                {
+                    ++iIndex;
+                }
+            }
+
+            currentElementLI->value = iIndex;
+            currentElementLJ->value = jIndex;
+
+            if (isLastNotNull)
+            {
+                A.push_front(A.pop_back());
+                LI.push_front(LI.pop_back());
+                LJ.push_front(LJ.pop_back());
+            }
+
+            currentElementA = currentElementA->next;
+            currentElementLI = currentElementLI->next;
+            currentElementLJ = currentElementLJ->next;
+        }
+
+        return csMatrix;
+    }
+
+    Matrix* unpack_CSMatrix(CSMatrix* csMatrix)
+    {
+        auto n = csMatrix->N;
+
+        Matrix* outputMatrix = new Matrix(n, n);
+
+        auto currentElementA = csMatrix->A.get_head();
+        auto currentElementLI = csMatrix->LI.get_head();
+        auto currentElementLJ = csMatrix->LJ.get_head();
+
+        for (size_t i = 0; i < n; i++)
+        {
+            for (size_t j = 0; j < n; j++)
+            {
+                if (currentElementA)
+                {
+                    if (currentElementLJ->value - 1 == j && currentElementLI->value - 1 == i)
+                    {
+                        outputMatrix->values[i][j] = currentElementA->value;
+
+                        currentElementA = currentElementA->next;
+                        currentElementLI = currentElementLI->next;
+                        currentElementLJ = currentElementLJ->next;
+                    }
+                }
+            }
+        }
+        
+        return outputMatrix;
     }
 }

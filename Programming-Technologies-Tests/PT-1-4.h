@@ -45,6 +45,28 @@ namespace TASK_1_4
             ++_size;
         }
 
+        // Удаление элемента из конца списка
+        int pop_back()
+        {
+            Node* deletedNode = _tail;
+            int deletedValue = deletedNode->value;
+
+            _tail = _tail->prev;
+            delete deletedNode;
+            _tail->next = nullptr;
+
+            --_size;
+
+            if (_size == 1)
+            {
+                _tail->next = nullptr;
+                _tail->prev = nullptr;
+                _head->next = nullptr;
+                _head->prev = nullptr;
+            }
+            return deletedValue;
+        }
+
         // Очищение списка
         void clear()
         {
