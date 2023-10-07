@@ -51,19 +51,28 @@ namespace TASK_1_4
             Node* deletedNode = _tail;
             int deletedValue = deletedNode->value;
 
-            _tail = _tail->prev;
-            delete deletedNode;
-            _tail->next = nullptr;
-
-            --_size;
 
             if (_size == 1)
+            {
+                _tail = nullptr;
+                _head = nullptr;
+                return deletedValue;    
+            }
+            else if (_size == 2)
             {
                 _tail->next = nullptr;
                 _tail->prev = nullptr;
                 _head->next = nullptr;
                 _head->prev = nullptr;
+                _tail = _head;
+                return deletedValue;
             }
+            --_size;
+
+            _tail = _tail->prev;
+            _tail->next = nullptr;
+            delete deletedNode;
+
             return deletedValue;
         }
 
@@ -76,13 +85,12 @@ namespace TASK_1_4
             }
 
             Node* current = _head;
-            while (_head->next)
+            while (_head)
             {
                 current = _head->next;
                 delete _head;
                 _head = current;
             }
-            delete _head;
             _head = nullptr;
             _tail = nullptr;
             _size = 0;

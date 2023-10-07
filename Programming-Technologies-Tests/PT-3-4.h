@@ -36,6 +36,12 @@ namespace TASK_3_4
 			clear_tree(_root);
 		}
 
+		void clear()
+		{
+			clear_tree(_root);
+			_root = nullptr;
+		}
+
 		TreeNode* get_root() { return _root; }
 
 		void add(int value)
@@ -101,6 +107,7 @@ namespace TASK_3_4
 			clear_tree(node->right);
 			clear_tree(node->left);
 			delete node;
+			node = nullptr;
 		}
 
 		TreeNode* _root;
@@ -261,30 +268,21 @@ namespace TASK_3_4
 		get_path_down(MAX_PATH_ROOT);
 	}
 
-	void test()
-	{
-		Tree tree;
-
-		tree.add(7);
-		tree.add(17);
-		tree.add(30);
-		tree.add(28);
-		tree.add(40);
-		tree.add(5);
-		tree.add(1);
-		tree.add(16);
-	}
-
 	vector<int> get_path(vector<int> input)
 	{
-		Tree tree;
+		Tree* tree = new Tree;
+		//tree.clear();
+		MAX_TREE_PATH.clear();
+		MAX_PATH_LENGTH = 0;
+		MAX_PATH_ROOT = nullptr;
+
 		for (int value : input)
 		{
-			tree.add(value);
+			(*tree).add(value);
 		}
 
-		count_path(tree.get_root());
-		get_path(tree.get_root());
+		count_path((*tree).get_root());
+		get_path((*tree).get_root());
 
 		return list_to_vector(MAX_TREE_PATH);
 	}
